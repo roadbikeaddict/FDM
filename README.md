@@ -1,4 +1,4 @@
 FDM
 ===
 
-A flight dynamics model
+A flight dynamics model. Very experimental
