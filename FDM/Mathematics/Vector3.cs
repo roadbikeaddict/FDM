@@ -61,6 +61,40 @@ namespace FDM.Mathematics
             Z = v.Z;
         }
 
+        // Indexer to easily access the data elements. ATTENTION: We start counting with 1!
+        public double this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 1:
+                        return X;
+                    case 2:
+                        return Y;
+                    case 3:
+                        return Z;
+                    default:
+                        return 42;  // Fix that!
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 1:
+                        X = value;
+                        break;
+                    case 2:
+                        Y = value;
+                        break;
+                    case 3:
+                        Z = value;
+                        break;
+                }
+            }
+        }
+ 
         #region Operators for compositions of this vector with another one
         public static Vector3 operator +(Vector3 other)
         {

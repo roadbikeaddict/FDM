@@ -85,6 +85,98 @@ namespace FDM.Mathematics
             return Math.Abs(CalculateDeterminante() - 0) > EqualityTolerance;
         }
 
+        public double this[int row, int column]
+        {
+            get
+            {
+                switch (row)
+                {
+                    case 1:
+                        switch (column)
+                        {
+                            case 1:
+                                return A11;
+                            case 2:
+                                return A12;
+                            case 3:
+                                return A13;
+                        }
+                        break;
+                    case 2:
+                        switch (column)
+                        {
+                            case 1:
+                                return A21;
+                            case 2:
+                                return A22;
+                            case 3:
+                                return A23;
+                        }
+                        break;
+                    case 3:
+                        switch (column)
+                        {
+                            case 1:
+                                return A31;
+                            case 2:
+                                return A32;
+                            case 3:
+                                return A33;
+                        }
+                        break;
+                }
+                return 42; // Fix me!
+            }
+            set
+            {
+                switch (row)
+                {
+                    case 1:
+                        switch (column)
+                        {
+                            case 1:
+                                A11 = value;
+                                break;
+                            case 2:
+                                A12 = value;
+                                break;
+                            case 3:
+                                A13 = value;
+                                break;
+                        }
+                        break;
+                    case 2:
+                        switch (column)
+                        {
+                            case 1:
+                                A21 = value;
+                                break;
+                            case 2:
+                                A22 = value;
+                                break;
+                            case 3:
+                                A23 = value;
+                                break;
+                        }
+                        break;
+                    case 3:
+                        switch (column)
+                        {
+                            case 1:
+                                A31 = value;
+                                break;
+                            case 2:
+                                A32 = value;
+                                break;
+                            case 3:
+                                A33 = value;
+                                break;
+                        }
+                        break;
+                }
+            }
+        }
+
         public Matrix33 CalculateInverse()
         {
             var det = CalculateDeterminante();

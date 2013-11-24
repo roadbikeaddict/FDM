@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mathematics\Quaternion.cs" />
+    <Compile Include="Mathematics\RealValue.cs" />
     <Compile Include="Mathematics\Vector3.cs" />
     <Compile Include="FdmConstants.cs" />
     <Compile Include="FdmEnums.cs" />
