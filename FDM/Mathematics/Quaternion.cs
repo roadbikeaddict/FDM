@@ -210,7 +210,7 @@ namespace FDM.Mathematics
   /** Transformation matrix.
       @return a reference to the transformation/rotation matrix
       corresponding to this quaternion rotation.  */
-    const Matrix33 GetT()
+    public Matrix33 GetT()
     {
         ComputeDerived(); 
         return mT;
@@ -261,37 +261,37 @@ namespace FDM.Mathematics
         double q2q4 = q2*q4;
         double q3q4 = q3*q4;
   
-  mT(1,1) = q1q1 + q2q2 - q3q3 - q4q4;
-  mT(1,2) = 2.0*(q2q3 + q1q4);
-  mT(1,3) = 2.0*(q2q4 - q1q3);
-  mT(2,1) = 2.0*(q2q3 - q1q4);
-  mT(2,2) = q1q1 - q2q2 + q3q3 - q4q4;
-  mT(2,3) = 2.0*(q3q4 + q1q2);
-  mT(3,1) = 2.0*(q2q4 + q1q3);
-  mT(3,2) = 2.0*(q3q4 - q1q2);
-  mT(3,3) = q1q1 - q2q2 - q3q3 + q4q4;
+  mT[1,1] = q1q1 + q2q2 - q3q3 - q4q4;
+  mT[1,2] = 2.0*(q2q3 + q1q4);
+  mT[1,3] = 2.0*(q2q4 - q1q3);
+  mT[2,1] = 2.0*(q2q3 - q1q4);
+  mT[2,2] = q1q1 - q2q2 + q3q3 - q4q4;
+  mT[2,3] = 2.0*(q3q4 + q1q2);
+  mT[3,1] = 2.0*(q2q4 + q1q3);
+  mT[3,2] = 2.0*(q3q4 - q1q2);
+  mT[3,3] = q1q1 - q2q2 - q3q3 + q4q4;
   // Since this is an orthogonal matrix, the inverse is simply
   // the transpose.
   mTInv = mT;
-  mTInv.T();
+        mTInv.Transpose();
   
   // Compute the Euler-angles
-  if (mT(3,3) == 0.0)
+  if (mT[3,3] == 0.0)
     mEulerAngles[1] = 0.5 * Math.PI;
   else
-    mEulerAngles[1] = Math.Atan2(mT(2,3), mT(3,3));
+    mEulerAngles[1] = Math.Atan2(mT[2,3], mT[3,3]);
   
-  if (mT(1,3) < -1.0)
+  if (mT[1,3] < -1.0)
     mEulerAngles[2] = 0.5*Math.PI;
-  else if (1.0 < mT(1,3))
+  else if (1.0 < mT[1,3])
     mEulerAngles[2] = -0.5*Math.PI;
   else
-    mEulerAngles[2] = Math.Asin(-mT(1,3));
+    mEulerAngles[2] = Math.Asin(-mT[1,3]);
   
-  if (mT(1,1) == 0.0)
+  if (mT[1,1] == 0.0)
     mEulerAngles[3] = 0.5*Math.PI;
   else {
-    double psi = Math.Atan2(mT(1,2), mT(1,1));
+    double psi = Math.Atan2(mT[1,2], mT[1,1]);
     if (psi < 0.0)
       psi += 2*Math.PI;
     mEulerAngles[3] = psi;
@@ -300,7 +300,7 @@ namespace FDM.Mathematics
   // FIXME: may be one can compute those values easier ???
   mEulerSines[1] = Math.Sin(mEulerAngles[1]);
   // mEulerSines(eTht) = sin(mEulerAngles(eTht));
-  mEulerSines[2] = -mT(1,3);
+  mEulerSines[2] = -mT[1,3];
   mEulerSines[3] = Math.Sin(mEulerAngles[3]);
   mEulerCosines[1] = Math.Cos(mEulerAngles[1]);
   mEulerCosines[2] = Math.Cos(mEulerAngles[2]);
@@ -372,16 +372,16 @@ namespace FDM.Mathematics
 /** Arithmetic operator "+".
       @param q a quaternion to be summed.
       @return a quaternion representing Q, where Q = Q + q. */
-     public static Quaternion operator +(Quaternion q)
+     public static Quaternion operator +(Quaternion p, Quaternion q)
      {
-         return new Quaternion(mData[0] + q[1], mData[1] + q[2], mData[2] + q[3], mData[3] + q[4]);
+         return new Quaternion(p[1] + q[1], p[2] + q[2], p[3] + q[3], p[4] + q[4]);
      }
   /** Arithmetic operator "-".
       @param q a quaternion to be subtracted.
       @return a quaternion representing Q, where Q = Q - q. */
-     public static Quaternion operator -(Quaternion q)
+     public static Quaternion operator -(Quaternion p, Quaternion q)
      {
-         return new Quaternion(mData[0] - q[1], mData[1] - q[2], mData[2] - q[3], mData[3] - q[4]);
+         return new Quaternion(p[1] - q[1], p[2] - q[2], p[3] - q[3], p[4] - q[4]);
      }
 
   /** Arithmetic operator "*".
