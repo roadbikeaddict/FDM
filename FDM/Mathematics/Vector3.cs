@@ -75,7 +75,7 @@ namespace FDM.Mathematics
                     case 3:
                         return Z;
                     default:
-                        return 42;  // Fix that!
+                        throw new IndexOutOfRangeException("The index of a vector element must be between 1 and 3");
                 }
             }
             set
@@ -91,6 +91,8 @@ namespace FDM.Mathematics
                     case 3:
                         Z = value;
                         break;
+                    default:
+                        throw new IndexOutOfRangeException("The index of a vector element must be between 1 and 3");
                 }
             }
         }

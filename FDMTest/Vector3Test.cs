@@ -51,5 +51,55 @@ namespace FDMTest
             Assert.AreEqual(actual.Y, 23);
             Assert.AreEqual(actual.Z, -11);
         }
+
+        [TestMethod]
+        public void The_two_vectors_should_be_equal()
+        {
+            var firstVector = new Vector3(42, 66, 23);
+            var secondVector = new Vector3(42, 66, 23);
+
+            var actual = firstVector.Equals(secondVector);
+            Assert.AreEqual(actual, true);
+        }
+
+        [TestMethod]
+        public void The_two_vectors_should_not_be_equal()
+        {
+            var firstVector = new Vector3(66, 42, -23);
+            var secondVector = new Vector3(42, 66, 23);
+
+            var actual = firstVector.Equals(secondVector);
+            Assert.AreEqual(actual, false);
+        }
+
+        [TestMethod]
+        public void A_hashcode_should_be_returned()
+        {
+            const int expected = -1386971136;
+            var testVector = new Vector3(42, 66, 23);
+            var actual = testVector.GetHashCode();
+            Assert.AreEqual(actual, expected);
+        }
+
+        [TestMethod]
+        public void A_copied_vector_should_be_returned()
+        {
+            var origVector = new Vector3(42, 66, 23);
+            var actual = new Vector3(origVector);
+            Assert.AreEqual(actual.X, origVector.X);
+            Assert.AreEqual(actual.Y, origVector.Y);
+            Assert.AreEqual(actual.Z, origVector.Z);
+        }
+
+        [TestMethod]
+        public void The_vector_components_should_be_assigned_correctly()
+        {
+            var origVector = new Vector3(42, 66, 23);
+            var actual = new Vector3();
+            actual.AssignFrom(origVector);
+            Assert.AreEqual(actual.X, origVector.X);
+            Assert.AreEqual(actual.Y, origVector.Y);
+            Assert.AreEqual(actual.Z, origVector.Z);
+        }
     }
 }
