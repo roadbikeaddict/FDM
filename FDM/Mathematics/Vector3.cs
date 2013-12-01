@@ -97,30 +97,7 @@ namespace FDM.Mathematics
             }
         }
  
-        #region Operators for compositions of this vector with another one
-        public static Vector3 operator +(Vector3 other)
-        {
-            var result = new Vector3
-            (
-                + other.X,
-                + other.Y,
-                + other.Z
-            );
-            return result; 
-        }
-
-        public static Vector3 operator -(Vector3 other)
-        {
-            var result = new Vector3
-            (
-                -other.X,
-                -other.Y,
-                -other.Z
-            );
-            return result;
-        }
-
-        #endregion
+     
         #region Operators for two given vectors
         public static Vector3 operator +(Vector3 first, Vector3 second)
         {
@@ -193,12 +170,6 @@ namespace FDM.Mathematics
             return result;
         }
 
-        public static Vector3 operator /(double scalar, Vector3 vector)
-        {
-            var result = vector/scalar;
-            return result;
-        }
-
         public static Vector3 operator /(Vector3 vector, double scalar)
         {
             var result = new Vector3 {X = vector.X/scalar, Y = vector.Y/scalar, Z = vector.Z/scalar};
@@ -251,7 +222,7 @@ namespace FDM.Mathematics
             var magnitude = Magnitude();
             if (Math.Abs(magnitude - 0.0) < EqualityTolerance)
             {
-                throw new DivideByZeroException();
+                throw new DivideByZeroException("Magnitude is zero");
             }
             var result = this / magnitude;
             return result;

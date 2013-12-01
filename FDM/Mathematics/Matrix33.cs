@@ -56,22 +56,26 @@ namespace FDM.Mathematics
             A33 = orig.A33;
         }
 
-        public Matrix33 Transpose(Matrix33 orig)
+        public static Matrix33 Transpose(Matrix33 orig)
         {
-            return new Matrix33(orig.A11,
-                                orig.A21,
-                                orig.A31,
-                                orig.A12,
-                                orig.A22,
-                                orig.A32,
-                                orig.A13,
-                                orig.A23,
-                                orig.A33);
+            var transposedMatrix = new Matrix33(orig);
+            transposedMatrix.Transpose();
+            return transposedMatrix;
         }
 
-        public Matrix33 Transpose()
+        public void Transpose()
         {
-            return Transpose(this);
+            var x = A21;
+            A21 = A12;
+            A12 = x;
+
+            x = A31;
+            A31 = A13;
+            A13 = x;
+
+            x = A32;
+            A32 = A23;
+            A23 = x;
         }
 
         public double CalculateDeterminante()
