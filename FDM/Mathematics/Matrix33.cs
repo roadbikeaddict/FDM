@@ -104,8 +104,9 @@ namespace FDM.Mathematics
                                 return A12;
                             case 3:
                                 return A13;
+                            default:
+                                throw new IndexOutOfRangeException("The index of a matrix column must be between 1 and 3");
                         }
-                        break;
                     case 2:
                         switch (column)
                         {
@@ -115,8 +116,9 @@ namespace FDM.Mathematics
                                 return A22;
                             case 3:
                                 return A23;
+                            default:
+                                throw new IndexOutOfRangeException("The index of a matrix column must be between 1 and 3");
                         }
-                        break;
                     case 3:
                         switch (column)
                         {
@@ -126,11 +128,13 @@ namespace FDM.Mathematics
                                 return A32;
                             case 3:
                                 return A33;
+                            default:
+                                throw new IndexOutOfRangeException("The index of a matrix column must be between 1 and 3");
                         }
-                        break;
+                    default:
+                        throw new IndexOutOfRangeException("The index of a matrix row must be between 1 and 3");
+                    }
                 }
-                return 42; // Fix me!
-            }
             set
             {
                 switch (row)
@@ -147,6 +151,8 @@ namespace FDM.Mathematics
                             case 3:
                                 A13 = value;
                                 break;
+                            default:
+                                throw new IndexOutOfRangeException("The index of a matrix column must be between 1 and 3");
                         }
                         break;
                     case 2:
@@ -161,6 +167,8 @@ namespace FDM.Mathematics
                             case 3:
                                 A23 = value;
                                 break;
+                            default:
+                                throw new IndexOutOfRangeException("The index of a matrix column must be between 1 and 3");
                         }
                         break;
                     case 3:
@@ -175,8 +183,12 @@ namespace FDM.Mathematics
                             case 3:
                                 A33 = value;
                                 break;
+                            default:
+                                throw new IndexOutOfRangeException("The index of a matrix column must be between 1 and 3");
                         }
                         break;
+                    default:
+                        throw new IndexOutOfRangeException("The index of a matrix row must be between 1 and 3");
                 }
             }
         }
