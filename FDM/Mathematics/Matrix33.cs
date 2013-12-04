@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace FDM.Mathematics
 {
@@ -198,7 +197,7 @@ namespace FDM.Mathematics
             var det = CalculateDeterminante();
             if (Math.Abs(det - 0) < EqualityTolerance)
             {
-                throw new InvalidDataException();
+                throw new ArgumentException("Determinante of given matrix is 0");
             }
 
             var revDet = 1/det;
@@ -243,19 +242,19 @@ namespace FDM.Mathematics
             return retVal;
         }
 
-        public static Matrix33 operator +(Matrix33 summand)
+        public static Matrix33 operator +(Matrix33 summand1, Matrix33 summand2)
         {
-            var retVal = new Matrix33(+summand.A11, +summand.A12, +summand.A13,
-                                      +summand.A21, +summand.A22, +summand.A23,
-                                      +summand.A31, +summand.A32, +summand.A33);
+            var retVal = new Matrix33(summand1.A11 + summand2.A11, summand1.A12 + summand2.A12, summand1.A13 + summand2.A13,
+                                      summand1.A21 + summand2.A21, summand1.A22 + summand2.A22, summand1.A23 + summand2.A23,
+                                      summand1.A31 + summand2.A31, summand1.A32 + summand2.A32, summand1.A33 + summand2.A33);
             return retVal;
         }
 
-        public static Matrix33 operator -(Matrix33 subtrahend)
+        public static Matrix33 operator -(Matrix33 subtrahend1, Matrix33 subtrahend2)
         {
-            var retVal = new Matrix33(+subtrahend.A11, +subtrahend.A12, +subtrahend.A13,
-                                      +subtrahend.A21, +subtrahend.A22, +subtrahend.A23,
-                                      +subtrahend.A31, +subtrahend.A32, +subtrahend.A33);
+            var retVal = new Matrix33(subtrahend1.A11 - subtrahend2.A11, subtrahend1.A12 - subtrahend2.A12, subtrahend1.A13 - subtrahend2.A13,
+                                      subtrahend1.A21 - subtrahend2.A21, subtrahend1.A22 - subtrahend2.A22, subtrahend1.A23 - subtrahend2.A23,
+                                      subtrahend1.A31 - subtrahend2.A31, subtrahend1.A32 - subtrahend2.A32, subtrahend1.A33 - subtrahend2.A33);
             return retVal;
         }
 
@@ -283,7 +282,7 @@ namespace FDM.Mathematics
             var a22 = factor.A21 * A12 + factor.A22 * A22 + factor.A23 * A32;
             var a23 = factor.A21 * A13 + factor.A22 * A23 + factor.A23 * A33;
             var a31 = factor.A31 * A11 + factor.A32 * A21 + factor.A33 * A31;
-            var a32 = factor.A31 * A12 + factor.A32 * A22 + factor.A13 * A32;
+            var a32 = factor.A31 * A12 + factor.A32 * A22 + factor.A33 * A32;
             var a33 = factor.A31 * A13 + factor.A32 * A23 + factor.A33 * A33;
             var retVal = new Matrix33(a11, a12, a13, a21, a22, a23, a31, a32, a33);
             return retVal;

@@ -294,5 +294,168 @@ namespace FDMTest
             Assert.AreEqual(actual.A33, 1, 1E-08);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException),
+            "Determinante of given matrix is 0")]
+        public void Matrix_has_no_inverse()
+        {
+            var testMatrix = new Matrix33(1, 2, 3.3,
+                                          4, 7,-4,
+                                          0, 0, 0);
+            testMatrix.CalculateInverse();
+        }
+
+        [TestMethod]
+        public void Multiply_vector_by_matrix()
+        {
+            var vector = new Vector3(3.0, 2.0, 4.0);
+            var matrix = new Matrix33(4, 9, -2,
+                                      1, 8, 4,
+                                      -3, 2, 5);
+
+            var actual = matrix.MultiplyVectorByMatrix(vector);
+
+            Assert.AreEqual(actual.X, 2, 1E-08);
+            Assert.AreEqual(actual.Y, 51, 1E-08);
+            Assert.AreEqual(actual.Z, 22, 1E-08);
+        }
+
+        [TestMethod]
+        public void Multiply_matrix_by_vector()
+        {
+            var vector = new Vector3(3.0, 2.0, 4.0);
+            var matrix = new Matrix33(4, 9, -2,
+                                      1, 8, 4,
+                                      -3, 2, 5);
+
+            var actual = matrix.MultiplyMatrixByVector(vector);
+
+            Assert.AreEqual(actual.X, 22, 1E-08);
+            Assert.AreEqual(actual.Y, 35, 1E-08);
+            Assert.AreEqual(actual.Z, 15, 1E-08);
+        }
+
+        [TestMethod]
+        public void Multiply_matrix_by_scalar()
+        {
+            const double scalar = 1.5;
+            var matrix = new Matrix33(4, 9, -2,
+                                      1, 8, 4,
+                                      -3, 2, 5);
+
+            var actual = matrix.MultiplyBy(scalar);
+
+            Assert.AreEqual(actual[1, 1], 6, 1E-08);
+            Assert.AreEqual(actual[1, 2], 13.5, 1E-08);
+            Assert.AreEqual(actual[1, 3], -3, 1E-08);
+
+            Assert.AreEqual(actual[2, 1], 1.5, 1E-08);
+            Assert.AreEqual(actual[2, 2], 12, 1E-08);
+            Assert.AreEqual(actual[2, 3], 6, 1E-08);
+
+            Assert.AreEqual(actual[3, 1], -4.5, 1E-08);
+            Assert.AreEqual(actual[3, 2], 3, 1E-08);
+            Assert.AreEqual(actual[3, 3], 7.5, 1E-08);
+        }
+
+        [TestMethod]
+        public void Add_two_matrices()
+        {
+            var matrix = new Matrix33(4, 9, -2,
+                                      1, 8, 4,
+                                      -3, 2, 5);
+            var matrixToAdd = new Matrix33(2, 3, 5,
+                                           -2, 0, 12,
+                                           3, -1, 4);
+
+            var actual = matrix + matrixToAdd;
+
+            Assert.AreEqual(actual[1, 1], 6, 1E-08);
+            Assert.AreEqual(actual[1, 2], 12, 1E-08);
+            Assert.AreEqual(actual[1, 3], 3, 1E-08);
+
+            Assert.AreEqual(actual[2, 1], -1, 1E-08);
+            Assert.AreEqual(actual[2, 2], 8, 1E-08);
+            Assert.AreEqual(actual[2, 3], 16, 1E-08);
+
+            Assert.AreEqual(actual[3, 1], 0, 1E-08);
+            Assert.AreEqual(actual[3, 2], 1, 1E-08);
+            Assert.AreEqual(actual[3, 3], 9, 1E-08);
+        }
+
+        [TestMethod]
+        public void Subtract_two_matrices()
+        {
+            var matrix = new Matrix33(4, 9, -2,
+                                      1, 8, 4,
+                                      -3, 2, 5);
+            var matrixToAdd = new Matrix33(2, 3, 5,
+                                           -2, 0, 12,
+                                           3, -1, 4);
+
+            var actual = matrix - matrixToAdd;
+
+            Assert.AreEqual(actual[1, 1], 2, 1E-08);
+            Assert.AreEqual(actual[1, 2], 6, 1E-08);
+            Assert.AreEqual(actual[1, 3], -7, 1E-08);
+
+            Assert.AreEqual(actual[2, 1], 3, 1E-08);
+            Assert.AreEqual(actual[2, 2], 8, 1E-08);
+            Assert.AreEqual(actual[2, 3], -8, 1E-08);
+
+            Assert.AreEqual(actual[3, 1], -6, 1E-08);
+            Assert.AreEqual(actual[3, 2], 3, 1E-08);
+            Assert.AreEqual(actual[3, 3], 1, 1E-08);
+        }
+
+        [TestMethod]
+        public void Multiply_this_matrix_by_another_one()
+        {
+            var matrix = new Matrix33(4, 9, -2,
+                                      1, 8, 4,
+                                      -3, 2, 5);
+            var otherMatrix = new Matrix33(2, 3, 5,
+                                           -2, 0, 12,
+                                           3, -1, 4);
+
+            var actual = matrix.MultiplyThisByOther(otherMatrix);
+
+            Assert.AreEqual(actual[1, 1], -16, 1E-08);
+            Assert.AreEqual(actual[1, 2], 14, 1E-08);
+            Assert.AreEqual(actual[1, 3], 120, 1E-08);
+
+            Assert.AreEqual(actual[2, 1], -2, 1E-08);
+            Assert.AreEqual(actual[2, 2], -1, 1E-08);
+            Assert.AreEqual(actual[2, 3], 117, 1E-08);
+
+            Assert.AreEqual(actual[3, 1], 5, 1E-08);
+            Assert.AreEqual(actual[3, 2], -14, 1E-08);
+            Assert.AreEqual(actual[3, 3], 29, 1E-08);
+        }
+
+        [TestMethod]
+        public void Multiply_other_matrix_by_this_one()
+        {
+            var matrix = new Matrix33(4, 9, -2,
+                                      1, 8, 4,
+                                      -3, 2, 5);
+            var otherMatrix = new Matrix33(2, 3, 5,
+                                           -2, 0, 12,
+                                           3, -1, 4);
+
+            var actual = matrix.MultiplyOtherByThis(otherMatrix);
+
+            Assert.AreEqual(actual[1, 1], -4, 1E-08);
+            Assert.AreEqual(actual[1, 2], 52, 1E-08);
+            Assert.AreEqual(actual[1, 3], 33, 1E-08);
+
+            Assert.AreEqual(actual[2, 1], -44, 1E-08);
+            Assert.AreEqual(actual[2, 2], 6, 1E-08);
+            Assert.AreEqual(actual[2, 3], 64, 1E-08);
+
+            Assert.AreEqual(actual[3, 1], -1, 1E-08);
+            Assert.AreEqual(actual[3, 2], 27, 1E-08);
+            Assert.AreEqual(actual[3, 3], 10, 1E-08);
+        }
     }
 }
