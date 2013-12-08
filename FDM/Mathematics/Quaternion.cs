@@ -85,27 +85,10 @@ namespace FDM.Mathematics
 
         public Quaternion(double phi, double theta, double psi)
         {
-            var thtd2 = 0.5*theta;
-            var psid2 = 0.5*psi;
-            var phid2 = 0.5*phi;
-
-            var sthtd2 = Math.Sin(thtd2);
-            var spsid2 = Math.Sin(psid2);
-            var sphid2 = Math.Sin(phid2);
-
-            var cthtd2 = Math.Cos(thtd2);
-            var cpsid2 = Math.Cos(psid2);
-            var cphid2 = Math.Cos(phid2);
-
-            var cphid2Cthtd2 = cphid2*cthtd2;
-            var cphid2Sthtd2 = cphid2*sthtd2;
-            var sphid2Sthtd2 = sphid2*sthtd2;
-            var sphid2Cthtd2 = sphid2*cthtd2;
-
-            Q1 = cphid2Cthtd2*cpsid2 + sphid2Sthtd2*spsid2;
-            Q2 = sphid2Cthtd2*cpsid2 - cphid2Sthtd2*spsid2;
-            Q3 = cphid2Sthtd2*cpsid2 + sphid2Cthtd2*spsid2;
-            Q4 = cphid2Cthtd2*spsid2 - sphid2Sthtd2*cpsid2;
+            Q1 = Math.Cos(0.5 * phi) * Math.Cos(0.5 * theta) * Math.Cos(0.5 * psi) + Math.Sin(0.5 * phi) * Math.Sin(0.5 * theta) * Math.Sin(0.5 * psi);
+            Q2 = Math.Sin(0.5 * phi) * Math.Cos(0.5 * theta) * Math.Cos(0.5 * psi) - Math.Cos(0.5 * phi) * Math.Sin(0.5 * theta) * Math.Sin(0.5 * psi);
+            Q3 = Math.Cos(0.5 * phi) * Math.Sin(0.5 * theta) * Math.Cos(0.5 * psi) + Math.Sin(0.5 * phi) * Math.Cos(0.5 * theta) * Math.Sin(0.5 * psi);
+            Q4 = Math.Cos(0.5 * phi) * Math.Cos(0.5 * theta) * Math.Sin(0.5 * psi) - Math.Sin(0.5 * phi) * Math.Sin(0.5 * theta) * Math.Cos(0.5 * psi);
         }
 
         public override bool Equals(object obj)
@@ -140,9 +123,8 @@ namespace FDM.Mathematics
 
         public Quaternion(EulerAngles index, double angle)
         {
-            var angle2 = 0.5*angle;
-            var sinAngle2 = Math.Sin(angle2);
-            var cosAngle2 = Math.Cos(angle2);
+            var sinAngle2 = Math.Sin(0.5 * angle);
+            var cosAngle2 = Math.Cos(0.5 * angle);
 
             if (index == EulerAngles.ePhi)
             {
@@ -393,7 +375,7 @@ namespace FDM.Mathematics
       to the inverse iff the quaternion is normalized.
   */
 
-        private Quaternion Conjugate()
+        public Quaternion Conjugate()
         {
             return new Quaternion(Q1, -Q2, -Q3, -Q4);
         }
