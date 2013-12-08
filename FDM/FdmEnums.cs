@@ -39,7 +39,7 @@
     {
         ePhi = 1, 
         eTht = 2,   
-        ePsi =3
+        ePsi = 3
     };
 
     /// Stability axis forces, Drag, Side force, Lift

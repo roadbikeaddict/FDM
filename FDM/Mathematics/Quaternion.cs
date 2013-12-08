@@ -1,64 +1,31 @@
 ﻿using System;
 
+
+/**  Models the Quaternion representation of rotations.
+    FGQuaternion is a representation of an arbitrary rotation through a
+    quaternion. It has vector properties. This class also contains access
+    functions to the euler angle representation of rotations and access to
+    transformation matrices for 3D vectors. Transformations and euler angles are
+    therefore computed once they are requested for the first time. Then they are
+    cached for later usage as long as the class is not accessed trough
+    a nonconst member function.
+
+    Note: The order of rotations used in this class corresponds to a 3-2-1 sequence,
+    or Y-P-R, or Z-Y-X, if you prefer.
+
+
+*/
+
 namespace FDM.Mathematics
 {
     public class Quaternion
     {
-        private double[] mData = new double[4];
+        public double Q1 { get; set; }
+        public double Q2 { get; set; }
+        public double Q3 { get; set; }
+        public double Q4 { get; set; }
 
-        private Vector3 mEulerAngles;
-
-        /// <summary>
-        /// Initializes with the identity rotation
-        /// </summary>
-        public Quaternion()
-        {
-            mData[0] = 1;
-            mData[1] = 0;
-            mData[2] = 0;
-            mData[3] = 0;
-        }
- 
-        // Copy constructor
-        public Quaternion(Quaternion other)
-        {
-            mData[0] = other.mData[0];
-            mData[1] = other.mData[1];
-            mData[2] = other.mData[2];
-            mData[3] = other.mData[3];
-        }
-
-         /** Initializer by euler angles.
-      Initialize the quaternion with the euler angles.
-      @param phi The euler X axis (roll) angle in radians
-      @param tht The euler Y axis (attitude) angle in radians
-      @param psi The euler Z axis (heading) angle in radians  */
-        public Quaternion(double phi, double theta, double psi)
-        {
-            var thtd2 = 0.5 * theta;
-            var psid2 = 0.5 * psi;
-            var phid2 = 0.5 * phi;
-  
-            var Sthtd2 = Math.Sin(thtd2);
-            var Spsid2 = Math.Sin(psid2);
-            var Sphid2 = Math.Sin(phid2);
-  
-            var Cthtd2 = Math.Cos(thtd2);
-            var Cpsid2 = Math.Cos(psid2);
-            var Cphid2 = Math.Cos(phid2);
-  
-            var Cphid2Cthtd2 = Cphid2*Cthtd2;
-            var Cphid2Sthtd2 = Cphid2*Sthtd2;
-            var Sphid2Sthtd2 = Sphid2*Sthtd2;
-            var Sphid2Cthtd2 = Sphid2*Cthtd2;
-  
-            mData[0] = Cphid2Cthtd2*Cpsid2 + Sphid2Sthtd2*Spsid2;
-            mData[1] = Sphid2Cthtd2*Cpsid2 - Cphid2Sthtd2*Spsid2;
-            mData[2] = Cphid2Sthtd2*Cpsid2 + Sphid2Cthtd2*Spsid2;
-            mData[3] = Cphid2Cthtd2*Spsid2 - Sphid2Sthtd2*Cpsid2;
-        }
-
-        // Indexer to easily access the data elements. ATTENTION: We start counting with 1
+        // Indexer to easily access the data elements. ATTENTION: We start counting with 1!
         public double this[int index]
         {
             get
@@ -66,15 +33,15 @@ namespace FDM.Mathematics
                 switch (index)
                 {
                     case 1:
-                        return mData[0];
+                        return Q1;
                     case 2:
-                        return mData[1];
+                        return Q2;
                     case 3:
-                        return mData[2];
+                        return Q3;
                     case 4:
-                        return mData[3];
+                        return Q4;
                     default:
-                        return 42;  // Fix that!
+                        throw new IndexOutOfRangeException("The index of a quaternion element must be between 1 and 4");
                 }
             }
             set
@@ -82,256 +49,212 @@ namespace FDM.Mathematics
                 switch (index)
                 {
                     case 1:
-                        mData[0] = value;
+                        Q1 = value;
                         break;
                     case 2:
-                        mData[1] = value;
+                        Q2 = value;
                         break;
                     case 3:
-                        mData[2] = value;
+                        Q3 = value;
                         break;
                     case 4:
-                        mData[3] = value;
+                        Q4 = value;
                         break;
+                    default:
+                        throw new IndexOutOfRangeException("The index of a quaternion element must be between 1 and 4");
                 }
             }
         }
- 
-  /** Initializer by one euler angle.
-      Initialize the quaternion with the single euler angle where its index
-      is given in the first argument.
-      @param idx Index of the euler angle to initialize
-      @param angle The euler angle in radians  */
-        public Quaternion(int idx, double angle)
+
+        public Quaternion()
+        {
+            Q1 = 1.0;
+            Q2 = 0.0;
+            Q3 = 0.0;
+            Q4 = 0.0;
+        }
+
+
+        public Quaternion(double q1, double q2, double q3, double q4)
+        {
+            Q1 = q1;
+            Q2 = q2;
+            Q3 = q3;
+            Q4 = q4;
+        }
+
+        public Quaternion(double phi, double theta, double psi)
+        {
+            var thtd2 = 0.5*theta;
+            var psid2 = 0.5*psi;
+            var phid2 = 0.5*phi;
+
+            var sthtd2 = Math.Sin(thtd2);
+            var spsid2 = Math.Sin(psid2);
+            var sphid2 = Math.Sin(phid2);
+
+            var cthtd2 = Math.Cos(thtd2);
+            var cpsid2 = Math.Cos(psid2);
+            var cphid2 = Math.Cos(phid2);
+
+            var cphid2Cthtd2 = cphid2*cthtd2;
+            var cphid2Sthtd2 = cphid2*sthtd2;
+            var sphid2Sthtd2 = sphid2*sthtd2;
+            var sphid2Cthtd2 = sphid2*cthtd2;
+
+            Q1 = cphid2Cthtd2*cpsid2 + sphid2Sthtd2*spsid2;
+            Q2 = sphid2Cthtd2*cpsid2 - cphid2Sthtd2*spsid2;
+            Q3 = cphid2Sthtd2*cpsid2 + sphid2Cthtd2*spsid2;
+            Q4 = cphid2Cthtd2*spsid2 - sphid2Sthtd2*cpsid2;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == GetType() && Equals((Quaternion) obj);
+        }
+
+        protected bool Equals(Quaternion other)
+        {
+            return Q1.Equals(other.Q1) && Q2.Equals(other.Q2) && Q3.Equals(other.Q3) && Q4.Equals(other.Q4);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = Q1.GetHashCode();
+                hashCode = (hashCode*397) ^ Q2.GetHashCode();
+                hashCode = (hashCode*397) ^ Q3.GetHashCode();
+                hashCode = (hashCode*397) ^ Q4.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        /** Initializer by one euler angle.
+        Initialize the quaternion with the single euler angle where its index
+        is given in the first argument.
+        @param idx Index of the euler angle to initialize
+        @param angle The euler angle in radians  */
+
+        public Quaternion(EulerAngles index, double angle)
         {
             var angle2 = 0.5*angle;
+            var sinAngle2 = Math.Sin(angle2);
+            var cosAngle2 = Math.Cos(angle2);
 
-            var Sangle2 = Math.Sin(angle2);
-            var Cangle2 = Math.Cos(angle2);
-
-            if (idx == 1)
+            if (index == EulerAngles.ePhi)
             {
-                mData[0] = Cangle2;
-                mData[1] = Sangle2;
-                mData[2] = 0.0;
-                mData[3] = 0.0;
+                Q1 = cosAngle2;
+                Q2 = sinAngle2;
+                Q3 = 0.0;
+                Q4 = 0.0;
             }
             else
             {
-                if (idx == 2)
+                if (index == EulerAngles.eTht)
                 {
-                    mData[0] = Cangle2;
-                    mData[1] = 0.0;
-                    mData[2] = Sangle2;
-                    mData[3] = 0.0;
+                    Q1 = cosAngle2;
+                    Q2 = 0.0;
+                    Q3 = sinAngle2;
+                    Q4 = 0.0;
 
                 }
                 else
                 {
-                    mData[0] = Cangle2;
-                    mData[1] = 0.0;
-                    mData[2] = 0.0;
-                    mData[3] = Sangle2;
+                    Q1 = cosAngle2;
+                    Q2 = 0.0;
+                    Q3 = 0.0;
+                    Q4 = sinAngle2;
                 }
             }
         }
 
+        /** Quaternion derivative for given angular rates.
+        Computes the quaternion derivative which results from the given
+        angular velocities
+        @param PQR a constant reference to the body rate vector
+        @return the quaternion derivative
+        @see Stevens and Lewis, "Aircraft Control and Simulation", Second Edition,
+           Equation 1.3-36. */
 
-        // Compute and return the euclidean norm of this vector.
-        public double Magnitude() 
+        public Quaternion GetQDot(Vector3 pqr)
         {
-            return Math.Sqrt(SqrMagnitude());
-        }
-
-  /** Square of the length of the vector.
-
-      Compute and return the square of the euclidean norm of this vector.
-  */
-        public double SqrMagnitude()
-        {
-            return mData[0] * mData[0] + mData[1] * mData[1] + mData[2] * mData[2] + mData[3] * mData[3];
-        }
-
-        void Normalize()
-        {
-            // Note: this does not touch the cache
-            // since it does not change the orientation ...
-  
-            double norm = Magnitude();
-            if (norm == 0.0)
-                return;
-  
-            double rnorm = 1.0/norm;
-            mData[0] *= rnorm;
-            mData[1] *= rnorm;
-            mData[2] *= rnorm;
-            mData[3] *= rnorm;
-        }
-        /** Returns the derivative of the quaternion corresponding to the
-    angular velocities PQR.
-    See Stevens and Lewis, "Aircraft Control and Simulation", Second Edition,
-    Equation 1.3-36. 
-           Quaternion derivative for given angular rates.
-      Computes the quaternion derivative which results from the given
-      angular velocities
-      @param PQR a constant reference to the body rate vector
-      @return the quaternion derivative
-      @see Stevens and Lewis, "Aircraft Control and Simulation", Second Edition,
-           Equation 1.3-36. 
-*/
-        public Quaternion GetQDot(Vector3 PQR)
-        {
-            double norm = Magnitude();
-            if (norm == 0.0)
+            var norm = Magnitude();
+            if (Math.Abs(norm) < EqualityTolerance)
+            {
                 return Zero();
-            double rnorm = 1.0/norm;
+            }
+            var rnorm = 1.0/norm;
 
-            Quaternion QDot = new Quaternion();
-            QDot[1] = -0.5*(this[2]*PQR[1] + this[3]*PQR[2] + this[4]*PQR[3]);
-            QDot[2] =  0.5*(this[1]*PQR[1] + this[3]*PQR[3] - this[4]*PQR[2]);
-            QDot[3] =  0.5*(this[1]*PQR[2] + this[4]*PQR[1] - this[2]*PQR[3]);
-            QDot[4] =  0.5*(this[1]*PQR[3] + this[2]*PQR[2] - this[3]*PQR[1]);
-            return rnorm*QDot;
+            var qDot = new Quaternion();
+            qDot[1] = -0.5*(Q2*pqr[(int) Rates.eP] + Q3*pqr[(int) Rates.eQ] + Q4*pqr[(int) Rates.eR]);
+            qDot[2] = 0.5*(Q1*pqr[(int) Rates.eP] + Q3*pqr[(int) Rates.eR] - Q4*pqr[(int) Rates.eQ]);
+            qDot[3] = 0.5*(Q1*pqr[(int) Rates.eQ] + Q4*pqr[(int) Rates.eP] - Q2*pqr[(int) Rates.eR]);
+            qDot[4] = 0.5*(Q1*pqr[(int) Rates.eR] + Q2*pqr[(int) Rates.eQ] - Q3*pqr[(int) Rates.eP]);
+            return rnorm*qDot;
         }
 
-        /** Scalar multiplication.
+        /** Transformation matrix.
+        @return a reference to the transformation/rotation matrix
+        corresponding to this quaternion rotation.  */
 
-    @param scalar scalar value to multiply with.
-    @param q Vector to multiply.
-
-    Multiply the Vector with a scalar value.
-*/
-        public static Quaternion operator *(double scalar, Quaternion q)
+        private Matrix33 GetT()
         {
-            return new Quaternion(scalar * q[1], scalar * q[2], scalar * q[3], scalar * q[4]);
+            ComputeDerived();
+            return mT;
         }
-  
 
-  /** Transformation matrix.
-      @return a reference to the transformation/rotation matrix
-      corresponding to this quaternion rotation.  */
-    public Matrix33 GetT()
-    {
-        ComputeDerived(); 
-        return mT;
-    }
+        /** Backward transformation matrix.
+        @return a reference to the inverse transformation/rotation matrix
+        corresponding to this quaternion rotation.  */
 
-  /** Backward transformation matrix.
-      @return a reference to the inverse transformation/rotation matrix
-      corresponding to this quaternion rotation.  */
-  public Matrix33 GetTInv()
-  {
-      ComputeDerived(); 
-      return mTInv;
-  }
+        private Matrix33 GetTInv()
+        {
+            ComputeDerived();
+            return mTInv;
+        }
 
-  /** Retrieves the Euler angles.
-      @return a reference to the triad of euler angles corresponding
-      to this quaternion rotation.
-      units radians  */
-  public Vector3 GetEuler()
-  {
-    ComputeDerived();
-    return mEulerAngles;
-  }
+        /** Retrieves the Euler angles.
+        @return a reference to the triad of euler angles corresponding
+        to this quaternion rotation.
+        units radians  */
 
-    // Compute the derived values
-    public void ComputeDerived()
-    {
-        // First normalize the 4-vector
-        double norm = Magnitude();
-        if (norm == 0.0)
-            return;
+        private Vector3 GetEuler()
+        {
+            ComputeDerived();
+            return mEulerAngles;
+        }
 
-        double rnorm = 1.0/norm;
-        double q1 = rnorm * mData[0];
-        double q2 = rnorm * mData[1];
-        double q3 = rnorm * mData[2];
-        double q4 = rnorm * mData[3];
+        /** Retrieves the Euler angles.
+        @param i the euler angle index.
+        units radians.
+        @return a reference to the i-th euler angles corresponding
+        to this quaternion rotation.
+        */
 
-        // Now compute the transformation matrix.
-        double q1q1 = q1*q1;
-        double q2q2 = q2*q2;
-        double q3q3 = q3*q3;
-        double q4q4 = q4*q4;
-        double q1q2 = q1*q2;
-        double q1q3 = q1*q3;
-        double q1q4 = q1*q4;
-        double q2q3 = q2*q3;
-        double q2q4 = q2*q4;
-        double q3q4 = q3*q4;
-  
-  mT[1,1] = q1q1 + q2q2 - q3q3 - q4q4;
-  mT[1,2] = 2.0*(q2q3 + q1q4);
-  mT[1,3] = 2.0*(q2q4 - q1q3);
-  mT[2,1] = 2.0*(q2q3 - q1q4);
-  mT[2,2] = q1q1 - q2q2 + q3q3 - q4q4;
-  mT[2,3] = 2.0*(q3q4 + q1q2);
-  mT[3,1] = 2.0*(q2q4 + q1q3);
-  mT[3,2] = 2.0*(q3q4 - q1q2);
-  mT[3,3] = q1q1 - q2q2 - q3q3 + q4q4;
-  // Since this is an orthogonal matrix, the inverse is simply
-  // the transpose.
-  mTInv = mT;
-        mTInv.Transpose();
-  
-  // Compute the Euler-angles
-  if (mT[3,3] == 0.0)
-    mEulerAngles[1] = 0.5 * Math.PI;
-  else
-    mEulerAngles[1] = Math.Atan2(mT[2,3], mT[3,3]);
-  
-  if (mT[1,3] < -1.0)
-    mEulerAngles[2] = 0.5*Math.PI;
-  else if (1.0 < mT[1,3])
-    mEulerAngles[2] = -0.5*Math.PI;
-  else
-    mEulerAngles[2] = Math.Asin(-mT[1,3]);
-  
-  if (mT[1,1] == 0.0)
-    mEulerAngles[3] = 0.5*Math.PI;
-  else {
-    double psi = Math.Atan2(mT[1,2], mT[1,1]);
-    if (psi < 0.0)
-      psi += 2*Math.PI;
-    mEulerAngles[3] = psi;
-  }
-  
-  // FIXME: may be one can compute those values easier ???
-  mEulerSines[1] = Math.Sin(mEulerAngles[1]);
-  // mEulerSines(eTht) = sin(mEulerAngles(eTht));
-  mEulerSines[2] = -mT[1,3];
-  mEulerSines[3] = Math.Sin(mEulerAngles[3]);
-  mEulerCosines[1] = Math.Cos(mEulerAngles[1]);
-  mEulerCosines[2] = Math.Cos(mEulerAngles[2]);
-  mEulerCosines[3] = Math.Cos(mEulerAngles[3]);
-}
-  /** Retrieves the Euler angles.
-      @param i the euler angle index.
-      units radians.
-      @return a reference to the i-th euler angles corresponding
-      to this quaternion rotation.
-   */
-  double GetEuler(int i)
-  {
-    ComputeDerived();
-    return mEulerAngles[i];
-  }
+        private double GetEuler(int i)
+        {
+            ComputeDerived();
+            return mEulerAngles[i];
+        }
 
-  /** Retrieves the Euler angles.
-      @param i the euler angle index.
-      @return a reference to the i-th euler angles corresponding
-      to this quaternion rotation.
-      units degrees */
-  double GetEulerDeg(int i) 
-  {
-    ComputeDerived();
-    return (Math.PI / 180) * mEulerAngles[i];
-  }
+        /** Retrieves the Euler angles.
+        @param i the euler angle index.
+        @return a reference to the i-th euler angles corresponding
+        to this quaternion rotation.
+        units degrees */
 
-  /** Retrieves sine of the given euler angle.
-      @return the sine of the Euler angle theta (pitch attitude) corresponding
-      to this quaternion rotation.  */
+        private double GetEulerDeg(int i)
+        {
+            ComputeDerived();
+            return FdmConstants.RadToDeg*mEulerAngles[i];
+        }
+
+        /** Retrieves sine of the given euler angle.
+        @return the sine of the Euler angle theta (pitch attitude) corresponding
+        to this quaternion rotation.  */
 
         private double GetSinEuler(int i)
         {
@@ -340,120 +263,278 @@ namespace FDM.Mathematics
         }
 
         /** Retrieves cosine of the given euler angle.
-      @return the sine of the Euler angle theta (pitch attitude) corresponding
-      to this quaternion rotation.  */
-        double GetCosEuler(int i) 
+        @return the sine of the Euler angle theta (pitch attitude) corresponding
+        to this quaternion rotation.  */
+
+        private double GetCosEuler(int i)
         {
             ComputeDerived();
             return mEulerCosines[i];
         }
 
- 
- 
+        public static bool operator ==(Quaternion first, Quaternion second)
+        {
+            var result = (Math.Abs(first[1] - second[1]) < EqualityTolerance)
+                         && (Math.Abs(first[2] - second[2]) < EqualityTolerance)
+                         && (Math.Abs(first[3] - second[3]) < EqualityTolerance)
+                         && (Math.Abs(first[4] - second[4]) < EqualityTolerance);
+            return result;
+        }
 
-  /** Comparison operator "==".
-      @param q a quaternion reference
-      @return true if both quaternions represent the same rotation.  */
-  public static bool operator ==(Quaternion p, Quaternion q)
-  {
-      return p[1] == q[1] && p[2] == q[2] && p[3] == q[3] && p[4] == q[4];
-  }
- 
-  /** Comparison operator "==".
-      @param q a quaternion reference
-      @return true if both quaternions represent the same rotation.  */
-  public static bool operator !=(Quaternion p, Quaternion q)
-  {
-      return !(p == q);
-  }
-  
- 
-  
-/** Arithmetic operator "+".
-      @param q a quaternion to be summed.
-      @return a quaternion representing Q, where Q = Q + q. */
-     public static Quaternion operator +(Quaternion p, Quaternion q)
-     {
-         return new Quaternion(p[1] + q[1], p[2] + q[2], p[3] + q[3], p[4] + q[4]);
-     }
-  /** Arithmetic operator "-".
-      @param q a quaternion to be subtracted.
-      @return a quaternion representing Q, where Q = Q - q. */
-     public static Quaternion operator -(Quaternion p, Quaternion q)
-     {
-         return new Quaternion(p[1] - q[1], p[2] - q[2], p[3] - q[3], p[4] - q[4]);
-     }
+        public static bool operator !=(Quaternion first, Quaternion second)
+        {
+            var result = !(first == second);
+            return result;
+        }
 
-  /** Arithmetic operator "*".
-      Multiplication of two quaternions is like performing successive rotations.
-      @param q a quaternion to be multiplied.
-      @return a quaternion representing Q, where Q = Q * q. */
-  public static Quaternion operator *(Quaternion p, Quaternion q)
-  {
-    return new Quaternion(p[1]*q[1]-p[2]*q[2]-p[3]*q[3]-p[4]*q[4],
-                          p[1]*q[2]+p[2]*q[1]+p[3]*q[4]-p[4]*q[3],
-                          p[1]*q[3]-p[2]*q[4]+p[3]*q[1]+p[4]*q[2],
-                          p[1]*q[4]+p[2]*q[3]-p[3]*q[2]+p[4]*q[1]);
-  }
+        public const double EqualityTolerance = Double.Epsilon;
 
-  
-  /** Inverse of the quaternion.
+        public static Quaternion operator +(Quaternion first, Quaternion second)
+        {
+            var result = new Quaternion
+                (
+                first[1] + second[1],
+                first[2] + second[2],
+                first[3] + second[3],
+                first[4] + second[4]
+                );
+            return result;
+        }
+
+        public static Quaternion operator -(Quaternion first, Quaternion second)
+        {
+            var result = new Quaternion
+                (
+                first[1] - second[1],
+                first[2] - second[2],
+                first[3] - second[3],
+                first[4] - second[4]
+                );
+            return result;
+        }
+
+        public static Quaternion operator *(Quaternion first, double scalar)
+        {
+            var result = new Quaternion
+                (
+                first[1]*scalar,
+                first[2]*scalar,
+                first[3]*scalar,
+                first[4]*scalar
+                );
+            return result;
+        }
+
+        public static Quaternion operator *(double scalar, Quaternion q)
+        {
+            return q*scalar;
+        }
+
+        public static Quaternion operator /(Quaternion first, double scalar)
+        {
+            var result = new Quaternion
+                (
+                first[1]/scalar,
+                first[2]/scalar,
+                first[3]/scalar,
+                first[4]/scalar
+                );
+            return result;
+        }
+
+        public static Quaternion operator *(Quaternion first, Quaternion second)
+        {
+            var result = new Quaternion
+                (
+                first.Q1*second.Q1 - first.Q2*second.Q2 - first.Q3*second.Q3 - first.Q4*second.Q4,
+                first.Q1*second.Q2 + first.Q2*second.Q1 + first.Q3*second.Q4 - first.Q4*second.Q3,
+                first.Q1*second.Q3 - first.Q2*second.Q4 + first.Q3*second.Q1 + first.Q4*second.Q2,
+                first.Q1*second.Q4 + first.Q2*second.Q3 - first.Q3*second.Q2 + first.Q4*second.Q1
+                );
+            return result;
+        }
+
+        public void Normalize()
+        {
+            var norm = Magnitude();
+            if (Math.Abs(norm) < EqualityTolerance)
+            {
+                return;
+            }
+
+            var rnorm = 1.0/norm;
+            Q1 *= rnorm;
+            Q2 *= rnorm;
+            Q3 *= rnorm;
+            Q4 *= rnorm;
+        }
+
+        /** Inverse of the quaternion.
 
       Compute and return the inverse of the quaternion so that the orientation
       represented with *this multiplied with the returned value is equal to
       the identity orientation.
   */
-  public Quaternion Inverse() 
-  {
-    double norm = Magnitude();
-    if (norm == 0.0)
-      return this;  // or new one with the same values?
-    double rNorm = 1.0/norm;
-    return new Quaternion( mData[0]*rNorm, -mData[1]*rNorm,
-                         -mData[2]*rNorm, -mData[3]*rNorm );
-  }
 
-  /** Conjugate of the quaternion.
+        public Quaternion Inverse()
+        {
+            var norm = Magnitude();
+            if (Math.Abs(norm) < EqualityTolerance)
+            {
+                throw new ArgumentException("Magnitude of given quaternion is 0");
+            }
+            var rNorm = 1.0/norm;
+            return new Quaternion(Q1*rNorm, -Q2*rNorm, -Q3*rNorm, -Q4*rNorm);
+        }
+
+        /** Conjugate of the quaternion.
 
       Compute and return the conjugate of the quaternion. This one is equal
       to the inverse iff the quaternion is normalized.
   */
-  Quaternion Conjugate()
-  {
-    return new Quaternion( mData[0], -mData[1], -mData[2], -mData[3] );
-  }
+
+        private Quaternion Conjugate()
+        {
+            return new Quaternion(Q1, -Q2, -Q3, -Q4);
+        }
 
 
-  /** Zero quaternion vector. Does not represent any orientation.
+
+        /** Length of the vector.
+
+      Compute and return the euclidean norm of this vector.
+  */
+
+        public double Magnitude()
+        {
+            return Math.Sqrt(SqrMagnitude());
+        }
+
+        /** Square of the length of the vector.
+
+        Compute and return the square of the euclidean norm of this vector.
+        */
+
+        public double SqrMagnitude()
+        {
+            return Q1*Q1 + Q2*Q2 + Q3*Q3 + Q4*Q4;
+        }
+
+
+        /** Zero quaternion vector. Does not represent any orientation.
       Useful for initialization of increments */
-  public static Quaternion Zero()
-  {
-      return new Quaternion( 0.0, 0.0, 0.0, 0.0 );
-  }
 
-
-  /** Copying by assigning the vector valued components.  */
-  Quaternion(double q1, double q2, double q3, double q4)
-  {
-      this[1] = q1; 
-      this[2] = q2; 
-      this[3] = q3; 
-      this[4] = q4;
-  }
-
-  
-
- /** This stores the transformation matrices.  */
-  private Matrix33 mT;
-  private Matrix33 mTInv;
- 
-
-  /** The cached sines and cosines of the euler angles.  */
-  private Vector3 mEulerSines;
-  private Vector3 mEulerCosines;
-};
+        public static Quaternion Zero()
+        {
+            return new Quaternion(0.0, 0.0, 0.0, 0.0);
+        }
 
 
 
+        /** Computation of derived values.
+      This function checks if the derived values like euler angles and
+      transformation matrices are already computed. If so, it
+      returns. If they need to be computed the real worker routine
+      \ref FGQuaternion::ComputeDerivedUnconditional(void) const
+      is called.
+      This function is inlined to avoid function calls in the fast path. */
+
+        private void ComputeDerived()
+        {
+
+            ComputeDerivedUnconditional();
+        }
+
+
+
+        /** This stores the transformation matrices.  */
+        private Matrix33 mT;
+        private Matrix33 mTInv;
+
+        /** The cached euler angles.  */
+        private Vector3 mEulerAngles;
+
+        /** The cached sines and cosines of the euler angles.  */
+        private Vector3 mEulerSines;
+        private Vector3 mEulerCosines;
+
+
+
+        // Compute the derived values if required ...
+        private void ComputeDerivedUnconditional()
+        {
+
+
+            // First normalize the 4-vector
+            double norm = Magnitude();
+            if (Math.Abs(norm) < EqualityTolerance)
+            {
+                return;
+            }
+            double rnorm = 1.0/norm;
+            double q1 = rnorm*Q1;
+            double q2 = rnorm*Q2;
+            double q3 = rnorm*Q3;
+            double q4 = rnorm*Q4;
+
+            // Now compute the transformation matrix.
+            double q1Q1 = q1*q1;
+            double q2Q2 = q2*q2;
+            double q3Q3 = q3*q3;
+            double q4Q4 = q4*q4;
+            double q1Q2 = q1*q2;
+            double q1Q3 = q1*q3;
+            double q1Q4 = q1*q4;
+            double q2Q3 = q2*q3;
+            double q2Q4 = q2*q4;
+            double q3Q4 = q3*q4;
+
+            mT[1, 1] = q1Q1 + q2Q2 - q3Q3 - q4Q4;
+            mT[1, 2] = 2.0*(q2Q3 + q1Q4);
+            mT[1, 3] = 2.0*(q2Q4 - q1Q3);
+            mT[2, 1] = 2.0*(q2Q3 - q1Q4);
+            mT[2, 2] = q1Q1 - q2Q2 + q3Q3 - q4Q4;
+            mT[2, 3] = 2.0*(q3Q4 + q1Q2);
+            mT[3, 1] = 2.0*(q2Q4 + q1Q3);
+            mT[3, 2] = 2.0*(q3Q4 - q1Q2);
+            mT[3, 3] = q1Q1 - q2Q2 - q3Q3 + q4Q4;
+            // Since this is an orthogonal matrix, the inverse is simply
+            // the transpose.
+            mTInv = mT;
+            mTInv.Transpose();
+
+            // Compute the Euler-angles
+            if (Math.Abs(mT[3, 3]) < EqualityTolerance)
+                mEulerAngles[(int) EulerAngles.ePhi] = 0.5*Math.PI;
+            else
+                mEulerAngles[(int) EulerAngles.ePhi] = Math.Atan2(mT[2, 3], mT[3, 3]);
+
+            if (mT[1, 3] < -1.0)
+                mEulerAngles[(int) EulerAngles.eTht] = 0.5*Math.PI;
+            else if (1.0 < mT[1, 3])
+                mEulerAngles[(int) EulerAngles.eTht] = -0.5*Math.PI;
+            else
+                mEulerAngles[(int) EulerAngles.eTht] = Math.Asin(-mT[1, 3]);
+
+            if (Math.Abs(mT[1, 1]) < EqualityTolerance)
+                mEulerAngles[(int) EulerAngles.ePsi] = 0.5*Math.PI;
+            else
+            {
+                double psi = Math.Atan2(mT[1, 2], mT[1, 1]);
+                if (psi < 0.0)
+                    psi += 2*Math.PI;
+                mEulerAngles[(int) EulerAngles.ePsi] = psi;
+            }
+
+            // FIXME: may be one can compute those values easier ???
+            mEulerSines[(int) EulerAngles.ePhi] = Math.Sin(mEulerAngles[(int) EulerAngles.ePhi]);
+            // mEulerSines(eTht) = sin(mEulerAngles(eTht));
+            mEulerSines[(int) EulerAngles.eTht] = -mT[1, 3];
+            mEulerSines[(int) EulerAngles.ePsi] = Math.Sin(mEulerAngles[(int) EulerAngles.ePsi]);
+            mEulerCosines[(int) EulerAngles.ePhi] = Math.Cos(mEulerAngles[(int) EulerAngles.ePhi]);
+            mEulerCosines[(int) EulerAngles.eTht] = Math.Cos(mEulerAngles[(int) EulerAngles.eTht]);
+            mEulerCosines[(int) EulerAngles.ePsi] = Math.Cos(mEulerAngles[(int) EulerAngles.ePsi]);
+        }
+    }
 }
 
