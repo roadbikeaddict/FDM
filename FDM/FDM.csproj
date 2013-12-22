@@ -43,6 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InputOutput\PropertyManager.cs" />
+    <Compile Include="InputOutput\PropertyNode.cs" />
+    <Compile Include="InputOutput\SGPropertyNode.cs" />
+    <Compile Include="Mathematics\Condition.cs" />
     <Compile Include="Mathematics\Quaternion.cs" />
     <Compile Include="Mathematics\RealValue.cs" />
     <Compile Include="Mathematics\Vector3.cs" />
